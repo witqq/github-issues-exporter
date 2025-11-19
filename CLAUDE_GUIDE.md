@@ -1,31 +1,38 @@
 # GitHub Issues Exporter
 
-Export GitHub issues for analysis.
+Export and manage GitHub issues.
 
-## Commands
+## Export Commands
 
 ```bash
-# Export all issues to markdown
-gh-export export -o issues.md
-
-# Export as JSON for processing
+# Export as JSON
 gh-export export -f json -o issues.json
 
-# Quick stats
-gh-export stats
-
 # Filter by label
-gh-export export -l "pre-alpha" -o pre-alpha.md
+gh-export list -l "pre-alpha"
 
-# Include full descriptions
-gh-export export --include-body -o detailed.md
+# Stats
+gh-export stats
 ```
 
-## Typical Usage
+## Management Commands
 
 ```bash
-# Get all issues from mcp-moira for analysis
-gh-export export -r anthropics/mcp-moira -f json -o /tmp/issues.json
+# View issue
+gh-export view 123
 
-# Then read the JSON file for analysis
+# Change status on kanban
+gh-export status 123 in_progress
+gh-export status 123 done
+gh-export status 123 todo
+
+# Close issues
+gh-export close 123
+gh-export close 123 -c "Done"
+
+# Assign
+gh-export assign 123 @me
+
+# Labels
+gh-export label 123 -a "bug" -d "enhancement"
 ```
