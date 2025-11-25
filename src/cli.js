@@ -22,7 +22,7 @@ program
   .option('-f, --format <format>', 'Output format: json, markdown, text', 'markdown')
   .option('-o, --output <file>', 'Output file (prints to stdout if not specified)')
   .option('--limit <number>', 'Maximum number of issues to fetch', '500')
-  .option('--include-body', 'Include full issue body', false)
+  .option('--titles-only', 'Export only titles without body', false)
   .option('--include-comments', 'Include issue comments', false)
   .action(async (options) => {
     try {

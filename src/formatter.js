@@ -28,7 +28,13 @@ function formatJson(issues, options) {
       updatedAt: issue.updatedAt
     };
 
-    if (options.includeBody) {
+    // Include project board status if available
+    if (issue.projectStatus) {
+      result.projectStatus = issue.projectStatus;
+    }
+
+    // Include body by default unless --titles-only specified
+    if (!options.titlesOnly) {
       result.body = issue.body;
     }
 
@@ -82,7 +88,8 @@ function formatIssueList(issues, options) {
     output += `**Created:** ${formatDate(issue.createdAt)}\n`;
     output += `**Updated:** ${formatDate(issue.updatedAt)}\n`;
 
-    if (options.includeBody && issue.body) {
+    // Include body by default unless --titles-only specified
+    if (!options.titlesOnly && issue.body) {
       output += `\n**Description:**\n\n${issue.body}\n`;
     }
 
@@ -113,7 +120,8 @@ function formatText(issues, options) {
       output += `  Milestone: ${issue.milestone}\n`;
     }
 
-    if (options.includeBody && issue.body) {
+    // Include body by default unless --titles-only specified
+    if (!options.titlesOnly && issue.body) {
       const truncatedBody = issue.body.substring(0, 200);
       output += `  Description: ${truncatedBody}${issue.body.length > 200 ? '...' : ''}\n`;
     }

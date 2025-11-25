@@ -36,8 +36,8 @@ async function exportIssues(options) {
   // Limit
   args.push('--limit', options.limit || '500');
 
-  // JSON output for parsing
-  args.push('--json', 'number,title,state,labels,assignees,milestone,createdAt,updatedAt,url,body,comments');
+  // JSON output for parsing (include projectItems for board status)
+  args.push('--json', 'number,title,state,labels,assignees,milestone,createdAt,updatedAt,url,body,comments,projectItems');
 
   try {
     const result = execSync(args.join(' '), {
@@ -48,20 +48,32 @@ async function exportIssues(options) {
     const issues = JSON.parse(result);
 
     // Transform to simplified format
-    return issues.map(issue => ({
-      number: issue.number,
-      title: issue.title,
-      state: issue.state,
-      labels: issue.labels.map(l => l.name),
-      assignees: issue.assignees.map(a => a.login),
-      milestone: issue.milestone?.title || null,
-      createdAt: issue.createdAt,
-      updatedAt: issue.updatedAt,
-      url: issue.url,
-      body: issue.body || '',
-      commentCount: issue.comments?.length || 0,
-      comments: issue.comments || []
-    }));
+    return issues.map(issue => {
+      // Extract project board status from first project item
+      let projectStatus = null;
+      if (issue.projectItems && issue.projectItems.length > 0) {
+        const firstProject = issue.projectItems[0];
+        if (firstProject.status) {
+          projectStatus = firstProject.status.name;
+        }
+      }
+
+      return {
+        number: issue.number,
+        title: issue.title,
+        state: issue.state,
+        labels: issue.labels.map(l => l.name),
+        assignees: issue.assignees.map(a => a.login),
+        milestone: issue.milestone?.title || null,
+        createdAt: issue.createdAt,
+        updatedAt: issue.updatedAt,
+        url: issue.url,
+        body: issue.body || '',
+        commentCount: issue.comments?.length || 0,
+        comments: issue.comments || [],
+        projectStatus: projectStatus // Board status: Todo, In Progress, Done
+      };
+    });
   } catch (error) {
     if (error.message.includes('gh: command not found')) {
       throw new Error('GitHub CLI (gh) is not installed. Install it from https://cli.github.com/');
